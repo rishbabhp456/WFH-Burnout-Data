@@ -14,7 +14,7 @@ cd WFH_Burnout_Data
 ### 2. Set up a Python Virtual Environment
 It's highly recommended to use a virtual environment to manage project dependencies.
 ```bash
-python -m venv .venv
+python -m venv .venv # For specific Python version on Windows: py -3.11 -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 ```
 

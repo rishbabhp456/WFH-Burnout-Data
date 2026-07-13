@@ -25,7 +25,9 @@
 
       <form id="predictionForm" class="dashboard-form">
         <div class="form-actions" style="grid-column: 2; text-align: right;">
-          <button id="predictionsButton" type="button" class="logout-button">Previous predictions</button>
+          <!--
+          <button id="predictionsButton" type="button" class="logout-button">Previous predictions</button> 
+          -->
         </div>
         <label class="day-type-field">
           Day type
@@ -90,17 +92,19 @@
     const resultSummary = document.getElementById('resultSummary');
     const resultSuggestion = document.getElementById('resultSuggestion');
     const dayTypeSelect = document.getElementById('dayTypeSelect');
-    const predictionsButton = document.getElementById('predictionsButton');
+    // const predictionsButton = document.getElementById('predictionsButton'); // Commented out
 
     async function loadDayTypeOptions() {
       try {
         const response = await fetch('/show_day_type_options');
         const result = await response.json();
 
-        if (result.status === 'success' && Array.isArray(result.day_type_options)) {
+        if (result.status === 'success' && Array.isArray(result.day_type_options) && dayTypeSelect) {
           dayTypeSelect.innerHTML = '';
           // Decide option text color based on page theme brightness
           const bodyStyle = getComputedStyle(document.body);
+          // Fallback to a default dark background if bodyStyle.backgroundColor is not set or transparent
+          // This ensures getLuminance always has a valid color to work with.
           const bodyBg = bodyStyle.backgroundColor || '#071b2b';
           // Simple luminance check to pick light or dark text for options
           function getLuminance(rgb) {
@@ -138,16 +142,18 @@
       }
     });
 
-    // Navigate to predictions page (will fetch user's previous predictions)
-    predictionsButton.addEventListener('click', () => {
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        window.location.href = '/login_page';
-        return;
-      }
-      window.location.href = '/predictions_page';
-    });
-
+    // Navigate to predictions page (will fetch user's previous predictions) - Commented out
+    /*
+    if (predictionsButton) {
+      predictionsButton.addEventListener('click', () => {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+          window.location.href = '/login_page';
+          return;
+        }
+        window.location.href = '/predictions_page';
+      });
+    } */
     function getRiskDetails(score) {
       if (score <= 33) {
         return {
