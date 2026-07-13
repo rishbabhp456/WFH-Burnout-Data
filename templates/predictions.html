@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your previous predictions</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+</head>
+<body>
+  <main class="dashboard-shell">
+    <section class="glass-card dashboard-card">
+      <div class="dashboard-intro">
+        <div>
+          <h1>Previous predictions</h1>
+          <p>Recent predictions saved for your account.</p>
+        </div>
+        <button id="backButton" type="button" class="logout-button">Back</button>
+      </div>
+
+      <div id="predictionsList" class="predictions-list">
+        <p>Loading your recent predictions…</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const backButton = document.getElementById('backButton');
+    const predictionsList = document.getElementById('predictionsList');
+
+    backButton.addEventListener('click', () => {
+      window.location.href = '/dashboard';
+    });
+
+    async function loadPredictions() {
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        window.location.href = '/login_page';
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/user_predictions', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+
+        if (data.status === 'success' && Array.isArray(data.predictions)) {
+          if (data.predictions.length === 0) {
+            predictionsList.innerHTML = '<p>No previous predictions found.</p>';
+            return;
+          }
+
+          const list = document.createElement('div');
+          list.className = 'predictions-grid';
+
+          data.predictions.forEach((p) => {
+            const item = document.createElement('div');
+            item.className = 'prediction-item';
+            item.innerHTML = `
+              <p><strong>Predicted score:</strong> ${p.Prediction ?? p.prediction ?? '—'}</p>
+              <p><strong>Day type:</strong> ${p.day_type ?? p.dayType ?? '—'}</p>
+              <p><strong>Work hours:</strong> ${p.work_hours ?? p.workHours ?? '—'}</p>
+              <p><strong>Saved at:</strong> ${p._createdAt ?? p._id?.$date ?? '—'}</p>
+            `;
+            list.appendChild(item);
+          });
+
+          predictionsList.innerHTML = '';
+          predictionsList.appendChild(list);
+        } else {
+          predictionsList.innerHTML = '<p>Unable to load predictions right now.</p>';
+        }
+      } catch (err) {
+        predictionsList.innerHTML = '<p>Unable to load predictions right now.</p>';
+      }
+    }
+
+    loadPredictions();
+  </script>
+</body>
+</html>

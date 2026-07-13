@@ -1,0 +1,390 @@
+:root {
+  --teal: #14b8a6;
+  --sage: #5eead4;
+  --lavender: #9f7aea;
+  --ink: #e6f4ff;
+  --surface: rgba(8, 15, 35, 0.75);
+  --surface-strong: rgba(10, 16, 36, 0.95);
+  --border: rgba(255, 255, 255, 0.16);
+  --shadow: 0 30px 80px rgba(2, 8, 23, 0.45);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif; /* Prioritize Inter, remove Poppins if not used */
+  color: var(--ink);
+  font-size: 16px; /* Slightly larger base font size */
+  background: radial-gradient(circle at top left, rgba(20, 184, 166, 0.2), transparent 35%), /* Softer gradient */
+              radial-gradient(circle at bottom right, rgba(159, 122, 234, 0.22), transparent 30%), /* Softer gradient */
+              linear-gradient(135deg, #040816 0%, #071b2b 45%, #10253a 100%);
+  background-size: 200% 200%;
+  animation: drift 16s ease infinite;
+  overflow-x: hidden;
+}
+
+.background-orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(30px);
+  opacity: 0.38;
+  pointer-events: none; /* Ensure orbs don't interfere with interactions */
+  animation: float 10s ease-in-out infinite; /* Slower, more gentle float */
+}
+
+.orb-one {
+  width: 380px; /* Larger orb */
+  height: 380px; /* Larger orb */
+  background: rgba(14, 116, 144, 0.2); /* Slightly less opaque */
+  top: -70px;
+  right: -60px;
+}
+
+.orb-two {
+  width: 300px; /* Larger orb */
+  height: 300px; /* Larger orb */
+  background: rgba(184, 142, 207, 0.18); /* Slightly less opaque */
+  left: -70px;
+  bottom: -80px;
+  animation-delay: -3s;
+}
+
+.auth-shell,
+.dashboard-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.glass-card {
+  width: min(100%, 1100px);
+  background: linear-gradient(135deg, rgba(10, 16, 36, 0.92), rgba(8, 20, 35, 0.84));
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px); /* For Safari compatibility */
+  border: 1px solid var(--border);
+  box-shadow: 0 40px 100px rgba(2, 8, 23, 0.55); /* More pronounced shadow */
+  border-radius: 32px; /* Slightly larger border-radius */
+}
+
+.split-card {
+  display: grid;
+  grid-template-columns: minmax(360px, 1.05fr) minmax(420px, 0.95fr);
+  overflow: hidden;
+  border-radius: 30px; /* Match glass-card or slightly smaller */
+}
+
+.dashboard-card {
+  padding: 32px;
+  display: grid;
+  gap: 24px;
+}
+
+.card-pane {
+  padding: 40px;
+}
+
+.welcome-pane {
+  background: linear-gradient(160deg, rgba(18, 28, 52, 0.96), rgba(12, 21, 41, 0.95));
+  border-right: 1px solid rgba(94, 234, 212, 0.18);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+}
+
+.form-pane {
+  background: rgba(6, 10, 24, 0.96);
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.welcome-pane h1 {
+  margin: 0 0 8px; /* Add some bottom margin */
+  font-size: 2.2rem; /* Slightly larger heading */
+  line-height: 1.2;
+  color: #f4fbff;
+  letter-spacing: -0.02em; /* Tighter letter spacing for headings */
+}
+
+.welcome-pane p {
+  margin: 0;
+  font-size: 1.05rem; /* Slightly larger paragraph text */
+  line-height: 1.8; /* Increased line height for readability */
+  color: rgba(226, 235, 255, 0.82);
+}
+ 
+.privacy-note {
+  font-size: 0.95rem;
+  color: rgba(226, 235, 255, 0.68);
+}
+
+.form-pane {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.form-pane h2,
+.dashboard-intro h1,
+.dashboard-intro h2 { /* Apply to dashboard intro headings as well */
+  margin: 0 0 8px;
+  font-size: 1.6rem;
+}
+
+.auth-form,
+.dashboard-form {
+  display: grid;
+  gap: 14px;
+}
+
+.auth-form label,
+.dashboard-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+input,
+select,
+button {
+  font: inherit;
+}
+
+input,
+select {
+  border: 1px solid rgba(94, 234, 212, 0.15); /* Slightly softer border */
+  border-radius: 20px; /* Slightly larger border-radius */
+  padding: 15px 18px; /* Adjusted padding */
+  outline: none;
+  background: rgba(255, 255, 255, 0.08);
+  color: #effbff;
+  transition: box-shadow 200ms ease, border-color 200ms ease; /* Smoother transition */
+}
+
+/* Ensure select and option text remain visible on both light and dark themes */
+select, select option {
+  color: inherit;
+  background-color: var(--surface-strong); /* Force a dark background for options */
+  padding: 8px 12px; /* Add padding to options for better readability */
+}
+
+.predictions-list {
+  margin-top: 8px;
+}
+
+.predictions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.prediction-item {
+  padding: 14px 16px; /* Slightly more padding */
+  border-radius: 14px; /* Slightly larger border-radius */
+  background: rgba(255,255,255,0.03); /* Slightly more visible background */
+  border: 1px solid rgba(255,255,255,0.06); /* Slightly more visible border */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+}
+
+input::placeholder {
+  color: rgba(226, 235, 255, 0.6);
+}
+ 
+input:focus,
+select:focus {
+  border-color: var(--sage);
+  box-shadow: 0 0 0 4px rgba(94, 234, 212, 0.18);
+}
+
+button {
+  border: none;
+  border-radius: 999px;
+  padding: 14px 20px; /* Slightly more padding */
+  color: white;
+  cursor: pointer;
+  background: linear-gradient(135deg, #1dd8c9, #7c3aed);
+  box-shadow: 0 16px 35px rgba(29, 216, 201, 0.2);
+  transition: transform 200ms ease, box-shadow 200ms ease, filter 200ms ease; /* Smoother transition */
+  letter-spacing: 0.02em; /* Subtle letter spacing */
+}
+ 
+button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 42px rgba(29, 216, 201, 0.28);
+  filter: brightness(1.03);
+}
+
+.switch-link {
+  margin-top: 4px;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.switch-link a {
+  color: var(--teal);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.logout-button {
+  border: 1px solid rgba(94, 234, 212, 0.24);
+  border-radius: 999px;
+  color: #d7f8ff;
+  background: rgba(14, 22, 45, 0.75); /* Slightly more transparent */
+  padding: 11px 18px; /* Adjusted padding */
+  cursor: pointer;
+  font-size: 0.9rem; /* Slightly smaller font for logout */
+  transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+}
+
+.logout-button:hover {
+  transform: translateY(-2px);
+  background: rgba(27, 40, 66, 0.95);
+  border-color: rgba(94, 234, 212, 0.4);
+}
+
+.form-message {
+  min-height: 24px;
+  margin: 10px 0 0; /* More vertical space */
+  font-weight: 600;
+  font-size: 0.9rem; /* Consistent font size */
+}
+.form-message.success {
+  color: #135a49;
+}
+.form-message.error {
+  color: #b42318;
+}
+ 
+.dashboard-form {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.dashboard-form .day-type-field {
+  max-width: 280px;
+  /* Use theme ink color so label and nested select/options match the UI */
+  color: var(--ink);
+  font-family: inherit;
+  font-weight: 600;
+}
+
+.dashboard-form .day-type-field select {
+  /* Force select text to use the theme color and inherit font styling */
+  color: var(--ink);
+  font-family: inherit;
+}
+
+.dashboard-form button {
+  grid-column: 1 / -1;
+  width: fit-content;
+  min-width: 220px;
+}
+
+.result-card {
+  padding: 24px 28px; /* More padding */
+  border-radius: 24px; /* Larger border-radius */
+  background: linear-gradient(135deg, rgba(6, 10, 24, 0.98), rgba(16, 24, 46, 0.88));
+  border: 1px solid rgba(94, 234, 212, 0.2); /* Softer border */
+  box-shadow: 0 25px 55px rgba(2, 8, 23, 0.3); /* More pronounced shadow */
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease; /* Smoother transition */
+}
+ 
+.result-card.loading {
+  transform: scale(1.01);
+  box-shadow: inset 0 0 0 1px rgba(94, 234, 212, 0.18);
+}
+ 
+.result-card.low-risk {
+  border-color: rgba(74, 222, 128, 0.36);
+  box-shadow: 0 20px 45px rgba(74, 222, 128, 0.18); /* Enhanced shadow */
+}
+ 
+.result-card.medium-risk {
+  border-color: rgba(250, 204, 21, 0.36);
+  box-shadow: 0 20px 45px rgba(250, 204, 21, 0.18); /* Enhanced shadow */
+}
+ 
+.result-card.high-risk {
+  border-color: rgba(248, 113, 113, 0.38);
+  box-shadow: 0 20px 45px rgba(248, 113, 113, 0.18); /* Enhanced shadow */
+}
+
+.result-label {
+  margin: 0 0 8px;
+  font-size: 0.82rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(226, 235, 255, 0.64);
+}
+ 
+.result-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #dff8ff;
+  background: rgba(255, 255, 255, 0.08);
+  margin-bottom: 10px;
+  letter-spacing: 0.02em; /* Subtle letter spacing */
+}
+ 
+.result-badge.low-risk {
+  background: rgba(34, 197, 94, 0.16);
+  color: #bdf7d7;
+}
+ 
+.result-badge.medium-risk {
+  background: rgba(234, 179, 8, 0.16);
+  color: #fde68a;
+}
+ 
+.result-badge.high-risk {
+  background: rgba(248, 113, 113, 0.16);
+  color: #fecaca;
+}
+
+.result-value {
+  font-size: 2.6rem; /* Slightly larger result value */
+  font-weight: 700;
+  color: #7ef2ff;
+}
+
+.result-caption,
+.result-suggestion {
+  margin: 8px 0 0;
+  color: rgba(226, 235, 255, 0.82);
+  line-height: 1.6;
+}
+ 
+@keyframes drift {
+  0% { background-position: 0% 50%; } /* Start at left center */
+  50% { background-position: 100% 50%; } /* Move to right center */
+  100% { background-position: 0% 50%; } /* Return to left center */
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(16px); }
+}
+
+@media (max-width: 860px) {
+  .split-card {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-form {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-form button {
+    width: 100%;
+  }
+}

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Your Account</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+</head>
+<body>
+  <div class="background-orb orb-one"></div>
+  <div class="background-orb orb-two"></div>
+
+  <main class="auth-shell">
+    <section class="glass-card split-card">
+      <div class="card-pane welcome-pane">
+        <h1>Start your calm reset</h1>
+        <p>Join a gentle, supportive space that helps you understand and improve your work-from-home wellbeing.</p>
+        <p class="privacy-note">We only use your details to keep your account secure and personalized.</p>
+      </div>
+
+      <div class="card-pane form-pane">
+        <h2>Create account</h2>
+        <form id="registerForm" class="auth-form">
+          <label>
+            Username
+            <input type="text" name="username" placeholder="Choose a username" required />
+          </label>
+          <label>
+            Email
+            <input type="email" name="email" placeholder="you@example.com" required />
+          </label>
+          <label>
+            Date of Birth
+            <input type="date" name="dob" required />
+          </label>
+          <label>
+            Password
+            <input type="password" name="password" placeholder="Create a strong password" required />
+          </label>
+          <button type="submit">Create Account</button>
+          <p class="switch-link">Already have an account? <a href="/login_page">Sign in</a></p>
+        </form>
+        <p id="message" class="form-message"></p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const form = document.getElementById('registerForm');
+    const message = document.getElementById('message');
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const formData = new FormData(form);
+
+      try {
+        const response = await fetch('/register', {
+          method: 'POST',
+          body: formData
+        });
+        const result = await response.json();
+
+        if (result.message && result.message.toLowerCase().includes('success')) {
+          message.textContent = 'Account created successfully. Please sign in.';
+          message.className = 'form-message success';
+          setTimeout(() => window.location.href = '/login_page', 900);
+        } else {
+          message.textContent = result.message || 'Registration failed.';
+          message.className = 'form-message error';
+        }
+      } catch (error) {
+        message.textContent = 'A network issue occurred.';
+        message.className = 'form-message error';
+      }
+    });
+  </script>
+</body>
+</html>

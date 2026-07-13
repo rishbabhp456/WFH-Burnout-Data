@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Burnout Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+</head>
+<body>
+  <div class="background-orb orb-one"></div>
+  <div class="background-orb orb-two"></div>
+
+  <main class="dashboard-shell">
+    <section class="glass-card dashboard-card">
+      <div class="dashboard-intro">
+        <div>
+          <h1>Daily wellbeing snapshot</h1>
+          <p>Share your current work pattern so we can assess your burnout risk with calm, supportive insight.</p>
+        </div>
+        <button id="logoutButton" type="button" class="logout-button">Logout</button>
+      </div>
+
+      <form id="predictionForm" class="dashboard-form">
+        <div class="form-actions" style="grid-column: 2; text-align: right;">
+          <button id="predictionsButton" type="button" class="logout-button">Previous predictions</button>
+        </div>
+        <label class="day-type-field">
+          Day type
+          <select id="dayTypeSelect" name="day_type" required>
+            <option value="">Loading options…</option>
+          </select>
+        </label>
+
+        <label>
+          Work hours
+          <input type="number" step="0.1" name="work_hours" placeholder="e.g. 8" required />
+        </label>
+
+        <label>
+          Screen time (hours)
+          <input type="number" step="0.1" name="screen_time_hours" placeholder="e.g. 6" required />
+        </label>
+
+        <label>
+          Meetings count
+          <input type="number" name="meetings_count" placeholder="e.g. 5" required />
+        </label>
+
+        <label>
+          Breaks taken
+          <input type="number" name="breaks_taken" placeholder="e.g. 2" required />
+        </label>
+
+        <label>
+          After-hours work
+          <input type="number" name="after_hours_work" placeholder="e.g. 1" required />
+        </label>
+
+        <label>
+          Sleep hours
+          <input type="number" step="0.1" name="sleep_hours" placeholder="e.g. 7" required />
+        </label>
+
+        <label>
+          Task completion rate
+          <input type="number" step="0.1" name="task_completion_rate" placeholder="e.g. 85" required />
+        </label>
+
+        <button type="submit">Assess burnout</button>
+      </form>
+
+      <div class="result-card" id="resultCard">
+        <p class="result-label">Prediction</p>
+        <div class="result-badge" id="riskBadge">Awaiting assessment</div>
+        <div class="result-value" id="resultValue">—</div>
+        <p class="result-caption" id="resultSummary">Your burnout score will appear here once you submit the form.</p>
+        <p class="result-suggestion" id="resultSuggestion">Submit your details to receive a calm, personalized suggestion.</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const form = document.getElementById('predictionForm');
+    const resultValue = document.getElementById('resultValue');
+    const resultCard = document.getElementById('resultCard');
+    const resultBadge = document.getElementById('riskBadge');
+    const resultSummary = document.getElementById('resultSummary');
+    const resultSuggestion = document.getElementById('resultSuggestion');
+    const dayTypeSelect = document.getElementById('dayTypeSelect');
+    const predictionsButton = document.getElementById('predictionsButton');
+
+    async function loadDayTypeOptions() {
+      try {
+        const response = await fetch('/show_day_type_options');
+        const result = await response.json();
+
+        if (result.status === 'success' && Array.isArray(result.day_type_options)) {
+          dayTypeSelect.innerHTML = '';
+          // Decide option text color based on page theme brightness
+          const bodyStyle = getComputedStyle(document.body);
+          const bodyBg = bodyStyle.backgroundColor || '#071b2b';
+          // Simple luminance check to pick light or dark text for options
+          function getLuminance(rgb) {
+            const nums = rgb.replace(/[^0-9,]/g, '').split(',').map(Number);
+            if (nums.length < 3) return 0;
+            const [r,g,b] = nums;
+            return (0.2126*r + 0.7152*g + 0.0722*b) / 255;
+          }
+          const lum = getLuminance(bodyBg);
+          const optionTextColor = lum > 0.6 ? '#071b2b' : '#f4fbff';
+
+          result.day_type_options.forEach((option) => {
+            const optionElement = document.createElement('option');
+            optionElement.value = option;
+            optionElement.textContent = option;
+            dayTypeSelect.appendChild(optionElement);
+          });
+        } else {
+          dayTypeSelect.innerHTML = '<option value="">Unable to load options</option>';
+        }
+      } catch (error) {
+        dayTypeSelect.innerHTML = '<option value="">Unable to load options</option>';
+      }
+    }
+
+    loadDayTypeOptions();
+
+    const logoutButton = document.getElementById('logoutButton');
+    logoutButton.addEventListener('click', async () => {
+      try {
+        await fetch('/logout', { method: 'POST' });
+      } finally {
+        localStorage.removeItem('access_token');
+        window.location.href = '/login_page';
+      }
+    });
+
+    // Navigate to predictions page (will fetch user's previous predictions)
+    predictionsButton.addEventListener('click', () => {
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        window.location.href = '/login_page';
+        return;
+      }
+      window.location.href = '/predictions_page';
+    });
+
+    function getRiskDetails(score) {
+      if (score <= 33) {
+        return {
+          label: 'Low Risk',
+          className: 'low-risk',
+          summary: 'Your routine looks balanced and sustainable right now.',
+          suggestion: 'Great job! Your well-being is on track. Keep maintaining your boundaries and current sleep schedule.'
+        };
+      }
+
+      if (score <= 66) {
+        return {
+          label: 'Medium Risk',
+          className: 'medium-risk',
+          summary: 'Early signs of fatigue are showing up in your workload pattern.',
+          suggestion: 'Caution: Early signs of burnout detected. Consider taking more frequent screen breaks and avoiding after-hours work today.'
+        };
+      }
+
+      return {
+        label: 'High Risk',
+        className: 'high-risk',
+        summary: 'Your current pattern suggests significant burnout pressure.',
+        suggestion: 'Alert: High Burnout Risk! It is critical to disconnect, prioritize immediate rest, and re-evaluate your current workload.'
+      };
+    }
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        window.location.href = '/login_page';
+        return;
+      }
+
+      const formData = new FormData(form);
+      resultValue.textContent = 'Assessing…';
+      resultBadge.textContent = 'Analyzing…';
+      resultSummary.textContent = 'We are reviewing your pattern and preparing a tailored wellbeing insight.';
+      resultSuggestion.textContent = 'Please hold on while your score is calculated.';
+      resultCard.className = 'result-card loading';
+
+      try {
+        const response = await fetch('/predict_burnout_score', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          body: formData
+        });
+        const result = await response.json();
+
+        if (result.status === 'success') {
+          const prediction = Number(result.prediction);
+          const riskDetails = getRiskDetails(Number.isFinite(prediction) ? prediction : 0);
+
+          resultValue.textContent = prediction.toFixed(2);
+          resultBadge.textContent = riskDetails.label;
+          resultBadge.className = `result-badge ${riskDetails.className}`;
+          resultSummary.textContent = riskDetails.summary;
+          resultSuggestion.textContent = riskDetails.suggestion;
+          resultCard.className = `result-card ${riskDetails.className}`;
+        } else {
+          resultValue.textContent = 'Unable to assess';
+          resultBadge.textContent = 'Assessment unavailable';
+          resultSummary.textContent = 'We could not calculate your burnout score right now.';
+          resultSuggestion.textContent = 'Please refresh and try again.';
+          resultCard.className = 'result-card';
+        }
+      } catch (error) {
+        resultValue.textContent = 'Unable to assess';
+        resultBadge.textContent = 'Assessment unavailable';
+        resultSummary.textContent = 'We could not calculate your burnout score right now.';
+        resultSuggestion.textContent = 'Please refresh and try again.';
+        resultCard.className = 'result-card';
+      }
+    });
+  </script>
+</body>
+</html>
