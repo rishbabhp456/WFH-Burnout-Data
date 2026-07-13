@@ -1,7 +1,7 @@
 import os
 
 FLASK_HOST = '0.0.0.0'
-FLASK_PORT = 5000
+FLASK_PORT = 8000
 
 MONGO_URL = 'mongodb://localhost:27017/'
 db_name = 'wfh_burnout'
