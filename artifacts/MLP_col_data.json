@@ -1,0 +1,1 @@
+{"day_type": {"Weekend": 0, "Weekday": 1}, "colNames": ["day_type", "work_hours", "screen_time_hours", "meetings_count", "breaks_taken", "after_hours_work", "sleep_hours", "task_completion_rate"]}
