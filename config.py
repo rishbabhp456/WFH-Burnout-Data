@@ -9,6 +9,9 @@ db_name = 'wfh_burnout'
 collection_data = 'burnout_data'
 collection_user = 'wfh_users'
 
-MODEL_PATH = os.path.join(os.getcwd(), 'artifacts', 'MLP_Trained_Model.keras')
-COLUMN_DATA_PATH = os.path.join(os.getcwd(), 'artifacts', 'MLP_col_data.json')
-STD_SCALAR_PATH = os.path.join(os.getcwd(), 'artifacts', 'std_scalar.pkl')
+
+# Define artifact paths relative to the config.py file's directory for robustness
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+MODEL_PATH = os.path.join(BASE_DIR, 'artifacts', 'MLP_Trained_Model.keras')
+COLUMN_DATA_PATH = os.path.join(BASE_DIR, 'artifacts', 'MLP_col_data.json')
+STD_SCALAR_PATH = os.path.join(BASE_DIR, 'artifacts', 'std_scalar.pkl')
